@@ -50,18 +50,15 @@ function getRelevantParentPid() {
   fi
 }
 
-#$BASHPID id of the current terminal
+#$BASHPID id of the current terminal session
 parentPid=$(getRelevantParentPid $BASHPID)
-tempfile=${tempfilesPath:=$HOME}/terminal_${parentPid}.tmp
-
-# Print to stderr
-alias printError='echo -e 1>&2'
+tempfile=${autoRootTempFileDir:=$HOME}/terminal_${parentPid}.tmp
 
 function printDebug() {
   if [[ $debugOut == 1 ]]; then
-    touch "$HOME/auto-sudo.log"
+    touch "$HOME/auto-root.log"
     echo "$1"
-    echo "$parentPid/$$ : $1" >>"$HOME/auto-sudo.log"
+    echo "$parentPid/$$ : $1" >>"$HOME/auto-root.log"
   fi
 }
 
@@ -69,9 +66,9 @@ function printDebug() {
 for opt in "$@"; do
   case $opt in
   useExitCode) useExitCode=1 ;;
-  su) useSu=1 ;;
+  useSu) useSu=1 ;;
   debug) debugOut=1 ;;
-  *) printError "auto-sudo: unknown option: $opt" ;;
+  *) echo -e 1>&2 "auto-root: unknown option: $opt" ;;
   esac
 done
 
@@ -82,11 +79,11 @@ function startAutoRootSession() {
     clear
 
     # Create directory to write temp files to if it doesn't exists
-    if [[ -d "$tempfilesPath" ]]; then
-      printDebug "$tempfilesPath exists"
+    if [[ -d "$autoRootTempFileDir" ]]; then
+      printDebug "$autoRootTempFileDir exists"
     else
-      printDebug "$tempfilesPath created"
-      mkdir -p "$tempfilesPath"
+      printDebug "$autoRootTempFileDir created"
+      mkdir -p "$autoRootTempFileDir"
     fi
 
     touch "$tempfile"

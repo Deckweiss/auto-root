@@ -1,13 +1,11 @@
-## auto sudo ##
+## auto root ##
 
-    #findmnt -cfn -o TARGET tmpfs
-    tempfilesPath=/run/user/1000/auto-root
+    autoRootTempFileDir="$HOME"
 
     source /opt/auto-root/auto-root.bash
-
     startAutoRootSession
     trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
     trap 'stopAutoRootSession' EXIT
-    PROMPT_COMMAND=autoSudo
+    PROMPT_COMMAND=autoRootEvaluate
 
-## end auto sudo ##
+## end auto root ##
