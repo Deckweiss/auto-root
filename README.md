@@ -15,7 +15,7 @@ You can add the following options to the source statement in your .bashrc file
 
 - `useExitCode` checks exit code of last command. Slightly better performance, but does not work when cancelling commands (for example a cancel in the middle of `find /` will not rerun with root if this option is enabled) or scripts that do not reliably output an exit code when running into a permissions error
 - `useSu` uses su instead of sudo
-- `debug` prints verbose output and collects the output of all sessions to ~/auto-root.log
+- `debug` prints verbose output and collects the output of all sessions to ~/auto-root.log (Currently does not work with zsh)
 
 Example: `source /opt/auto-root/auto-root.bash useSu debug`
 
@@ -51,11 +51,12 @@ Packages are coming in the near future
 
 ## TODO:
 
-- [ ] improve getRelevantParentPid function
-- [ ] document how this works
+- [x] improve getRelevantParentPid function
+- [x] document how this works
 - [ ] package for Debian based distros
 - [ ] package for Arch based distros
 - [ ] release on AUR
+- [ ] fix debug flag for zsh
 
 ## Credit:
 
