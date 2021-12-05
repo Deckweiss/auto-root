@@ -3,7 +3,7 @@ A script that automatically reruns your last command as root if you forgot it.
 
 ![auto-root](https://user-images.githubusercontent.com/10449980/144729941-8b0ce1be-f234-4f15-8254-5d110dab7102.gif)
 
-This tool is for people like me, who forget to prepend some commands with `sudo` and are annoyed by the additional step of have to type `sudo !!`.
+This tool is for people like me, who forget to prepend commands with `sudo` and are annoyed by the additional step of typing `sudo !!`.
 
 It will ALWAYS ask for a password, to prevent executing something as root without the user noticing.
 
@@ -35,7 +35,7 @@ Better ways to install are comming in the future.
 
 ## how it works:
 
-//TODO
+//TODO explain the magic
 
 ## TODO:
 
