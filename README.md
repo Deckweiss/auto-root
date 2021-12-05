@@ -56,6 +56,7 @@ This tool would not exist without the following things:
 - initial inspirations from https://github.com/agura-lex/find-the-command
 - list of permission related patterns from https://github.com/nvbn/thefuck/blob/master/thefuck/rules/sudo.py
 - brainstorming ideas and discussing it with the amazing Archlinux community on https://www.reddit.com/r/archlinux/comments/qkhvbh/is_there_an_autosudo_for_terminal/
+- bash scripting help and general hackery by https://github.com/theAkito
 
 ## Notice:
 
