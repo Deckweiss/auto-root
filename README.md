@@ -37,6 +37,12 @@ Better ways to install are comming in the future.
 
 //TODO explain the magic
 
+1. When you open an interactive bash terminal, a temporary file is created for this session. This way, the outputs from multiple terminals do not get in each others way.
+2. Running a command saves the output of that command to the temp file, `script` is used to accomplish this.
+3. After the command is finished running or canceled, it is checked if any of the matching patterns from a list can be found in the temp file. If so, the last command is re-run with sudo or su. 
+4. The temp file is cleared of any content and is ready for the next command.
+5. When the interactive bash session is closed, it's temp file is deleted.
+
 ## TODO:
 
 - [ ] improve getRelevantParentPid function
