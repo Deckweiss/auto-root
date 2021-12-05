@@ -28,10 +28,18 @@ Example: `source /opt/auto-root/auto-root.bash useSu debug`
 
 ## install:
 
+#### manually:
+1. Copy `auto-root.bash` wherever you want.
+2. Add the contents of `auto-root-bashrc` to your `~/.bashrc` 
+3. Modify the relevant paths in your `~/.bashrc` (if you need the location of your tmpfs for `autoRootTempFileDir` check the output of `findmnt -cf tmpfs`)
+
+#### install script: 
 Download/clone the repo and run the install script. Can be re-run safely for updating. 
+
 !!! The install script modifies your ~/.bashrc non destructively !!!
 
-Better ways to install are comming in the future.
+#### from package:
+Packages are coming in the near future
 
 ## how it works:
 
