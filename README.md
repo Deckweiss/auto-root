@@ -35,8 +35,6 @@ Better ways to install are comming in the future.
 
 ## how it works:
 
-//TODO explain the magic
-
 1. When you open an interactive bash terminal, a temporary file is created for this session. This way, the outputs from multiple terminals do not get in each others way.
 2. Running a command saves the output of that command to the temp file, `script` is used to accomplish this.
 3. After the command is finished running or canceled, it is checked if any of the matching patterns from a list can be found in the temp file. If so, the last command is re-run with sudo or su. 
