@@ -38,6 +38,7 @@ Better ways to install are comming in the future.
 ## TODO:
 
 - [ ] improve getRelevantParentPid function
+- [ ] document how this works
 - [ ] package for Debian based distros
 - [ ] package for Arch based distros
 - [ ] release on AUR
