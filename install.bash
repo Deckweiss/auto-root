@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
-sudo mkdir /opt/auto-root
-sudo cp ./auto-root.bash /opt/auto-root/auto-root.bash
+if [ "$EUID" -ne 0 ]; then
+  echo "needs to be run as root"
+  return 1
+fi
+
+mkdir /opt/auto-root
+cp ./auto-root.bash /opt/auto-root/auto-root.bash
 
 #replaceInFile contentFile targetFile startMarker endMarker
 function replaceInFile(){
@@ -15,13 +20,13 @@ function replaceInFile(){
     startMarker=$3
     endMarker=$4
 
-    if ! grep -q "$startMarker" $targetFile; then
+    if ! grep -q "$startMarker" "$targetFile"; then
         #String was not found in targetFile
         echo "Adding contents from $contentFile to $targetFile"
-        cat $contentFile >> $targetFile
+        cat "$contentFile" >> "$targetFile"
     else
         echo "Updating contents from $contentFile to $targetFile"
-        ed $targetFile<<EOF
+        ed "$targetFile"<<EOF
 /^$startMarker
 +,/^$endMarker/-1d
 -r !sed -n '/^$startMarker/,/^$endMarker/p' $contentFile|grep -v '^##'

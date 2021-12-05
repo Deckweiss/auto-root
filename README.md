@@ -21,7 +21,7 @@ Example: `source /opt/auto-root/auto-root.bash useSu debug`
 
 ## dependencies:
 
-- `bash`
+- `bash` or `zsh`
 - `su` or `sudo`
 - `script` from `util-linux`
 - multiple tools from `coreutils`

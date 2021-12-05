@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+# Parse options
+for opt in "$@"; do
+  case $opt in
+  useExitCode) useExitCode=1 ;;
+  useSu) useSu=1 ;;
+  debug) debugOut=1 ;;
+  *) echo -e 1>&2 "auto-root: unknown option: $opt" ;;
+  esac
+done
+
 declare -a patterns=(
   'permission denied'
   'eacces'
@@ -28,26 +38,30 @@ declare -a patterns=(
   'error: insufficient privileges'
 )
 
-# TODO ↓ can be improved for better cross platform support
-
-# Look up the one before top-level parent Process ID (PID) of the given PID, or the current
-# process if unspecified.
 function getRelevantParentPid() {
-  # Look up the parent of the given PID.
-  pid=${1:-$$}
-  lastChildPid=${2}
-  stat=($(</proc/${pid}/stat))
-  ppid=${stat[3]}
+  pidTree=$(pstree -spA $$)
 
-  # /sbin/init always has a PID of 1, so if you reach that, the PID is the top-level parent.
-  # And the lastChildPid is the relevant parent.
-  # (for example /init/plasmashell/konsole/bash/script - returns pid of konsole)
-  # Otherwise, keep looking.
-  if [[ ${ppid} -eq 1 ]]; then
-    echo "${lastChildPid}"
+  if grep -q zsh <<< "$pidTree"; then
+    relevantShellName=zsh
+  elif grep -q bash <<< "$pidTree"; then
+    relevantShellName=bash
   else
-    getRelevantParentPid "${ppid}" "${pid}"
+    relevantShellName=${SHELL##*/}
   fi
+
+  relevantParentPid=$(echo "$pidTree" | sed "s/${relevantShellName}(\([0-9]*\)).*$/\1/" | sed 's/^.*---\([0-9]*\)/\1/')
+
+  if [[ $debugOut == 1 ]]; then
+      touch "$HOME/auto-root.log"
+      echo "shell name: ${relevantShellName}" >&2
+      echo "pid tree: ${pidTree}" >&2
+      echo "parent pid: ${relevantParentPid}" >&2
+      echo "${relevantParentPid}/$$ : shell name: ${relevantShellName}" >>"$HOME/auto-root.log"
+      echo "${relevantParentPid}/$$ : pid tree: ${pidTree}" >>"$HOME/auto-root.log"
+      echo "${relevantParentPid}/$$ : parent pid: ${relevantParentPid}" >>"$HOME/auto-root.log"
+  fi
+
+  echo "$relevantParentPid"
 }
 
 #$BASHPID id of the current terminal session
@@ -57,20 +71,11 @@ tempfile=${autoRootTempFileDir:=$HOME}/terminal_${parentPid}.tmp
 function printDebug() {
   if [[ $debugOut == 1 ]]; then
     touch "$HOME/auto-root.log"
-    echo "$1"
     echo "$parentPid/$$ : $1" >>"$HOME/auto-root.log"
+    echo "$1"
   fi
 }
 
-# Parse options
-for opt in "$@"; do
-  case $opt in
-  useExitCode) useExitCode=1 ;;
-  useSu) useSu=1 ;;
-  debug) debugOut=1 ;;
-  *) echo -e 1>&2 "auto-root: unknown option: $opt" ;;
-  esac
-done
 
 function startAutoRootSession() {
   if [[ -e "$tempfile" ]]; then
