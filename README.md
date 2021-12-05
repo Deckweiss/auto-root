@@ -11,7 +11,7 @@ You can configure the location of the necessary temp files by modifying `autoRoo
 
 You can add the following options to the source statement in your .bashrc file
 
-- `useExitCode` checks exit code of last command. Slightly better performance, but does not work when cancelling commands (for example `find /`) or scripts that do not reliably output an exit code when running into a permissions error
+- `useExitCode` checks exit code of last command. Slightly better performance, but does not work when cancelling commands (for example a cancel in the middle of `find /` will not rerun with root if this option is enabled) or scripts that do not reliably output an exit code when running into a permissions error
 - `useSu` uses su instead of sudo
 - `debug` prints verbose output and collects the output of all sessions to ~/auto-root.log
 
