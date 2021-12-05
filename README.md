@@ -1,2 +1,4 @@
-# auto-sudo
-A script that automatically reruns your last command with sudo if you forgot it
+# auto-root
+A script that automatically reruns your last command as root if you forgot it
+
+
