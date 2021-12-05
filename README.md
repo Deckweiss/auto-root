@@ -51,7 +51,7 @@ Better ways to install are comming in the future.
 
 ## Credit:
 
-This tool would not exist without the following things:
+This tool would not exist without the following:
 
 - initial inspirations from https://github.com/agura-lex/find-the-command
 - list of permission related patterns from https://github.com/nvbn/thefuck/blob/master/thefuck/rules/sudo.py
