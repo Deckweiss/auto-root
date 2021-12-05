@@ -26,7 +26,7 @@ Example: `source /opt/auto-root/auto-root.bash useSu debug`
 
 ## install:
 
-Download/clone the repo and run the install script.
+Download/clone the repo and run the install script. Can be re-run safely for updating. !!! The install script modifies your ~/.bashrc non destructively
 
 Better ways to install are comming in the future.
 
