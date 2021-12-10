@@ -21,6 +21,7 @@ declare -a patterns=(
   'this command has to be run under the root user.'
   'this operation requires root.'
   'requested operation requires superuser privilege'
+  'must run this script as root'
   'must be run as root'
   'must run as root'
   'must be superuser'
