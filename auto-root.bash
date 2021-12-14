@@ -37,6 +37,7 @@ declare -a patterns=(
   'use `sudo`'
   'sudorequirederror'
   'error: insufficient privileges'
+  'superuser access required'
 )
 
 function getRelevantParentPid() {
