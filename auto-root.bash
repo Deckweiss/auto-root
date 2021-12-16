@@ -6,6 +6,7 @@ for opt in "$@"; do
   useExitCode) useExitCode=1 ;;
   useSu) useSu=1 ;;
   debug) debugOut=1 ;;
+  disableTildeExpansion) tildeExpansion=0 ;;
   *) echo -e 1>&2 "auto-root: unknown option: $opt" ;;
   esac
 done
@@ -132,12 +133,20 @@ function autoRootEvaluate() {
 
   clearLoggingSession
   if $shouldRerunAsRoot; then
-    if [[ $useSu == 1 ]]; then
-      printDebug "re-running '$previous_command' with su"
-      su -c "$previous_command"
+    if [[ $tildeExpansion == 0 ]]; then
+      previous_command_to_run=$previous_command
     else
-      printDebug "re-running '$previous_command' with sudo"
-      sudo -k bash -c "$previous_command"
+      printDebug "Previous command raw: '$previous_command'"
+      previous_command_to_run="${previous_command//\~/$HOME}"
+      printDebug "Previous command expanded: '$previous_command_to_run'"
+    fi
+
+    if [[ $useSu == 1 ]]; then
+      printDebug "re-running '$previous_command_to_run' with su"
+      su -c "$previous_command_to_run"
+    else
+      printDebug "re-running '$previous_command_to_run' with sudo"
+      sudo -k bash -c "$previous_command_to_run"
     fi
   fi
 }
