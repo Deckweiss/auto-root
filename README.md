@@ -31,7 +31,7 @@ Example: `source /opt/auto-root/auto-root.bash useSu debug`
 
 #### manually:
 1. Copy `auto-root.bash` wherever you want.
-2. Add the contents of `auto-root-bashrc` to your `~/.bashrc` or `~/.zshrc` 
+2. Add the contents of `auto-root-shrc` to your `~/.bashrc` or `~/.zshrc` 
 3. Modify the relevant paths in your `~/.bashrc` or `~/.zshrc` (if you need the location of your tmpfs for `autoRootTempFileDir` check the output of `findmnt -cf tmpfs`)
 
 #### install script: 
