@@ -36,7 +36,7 @@ EOF
     fi
 }
 
-replaceInFile ./auto-root-bashrc ~/.bashrc "## auto root ##" "## end auto root ##"
+replaceInFile ./auto-root-shrc ~/.bashrc "## auto root ##" "## end auto root ##"
 
 tempfilesPath="$(findmnt -cfn -o TARGET tmpfs)/auto-root"
 bashrcTempfilesPathString="autoRootTempFileDir=\"$tempfilesPath\""
