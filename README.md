@@ -55,8 +55,8 @@ Packages are coming in the near future
 - [x] improve getRelevantParentPid function
 - [x] document how this works
 - [ ] package for Debian based distros
-- [ ] package for Arch based distros
-- [ ] release on AUR
+- [x] package for Arch based distros
+- [x] release on AUR
 - [ ] fix debug flag for zsh
 
 ## Credit:
