@@ -40,7 +40,9 @@ Download/clone the repo and run the install script. Can be re-run safely for upd
 !!! The install script modifies your ~/.bashrc !!!
 
 #### from package:
-Packages are coming in the near future
+You can install `auto-root-git` from AUR.
+
+Make sure to follow the post install instructions or the manual install guide above to update your `~/.bashrc` or `~/.zshrc` file.
 
 ## how it works:
 
