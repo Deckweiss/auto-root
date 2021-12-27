@@ -6,7 +6,6 @@ for opt in "$@"; do
   useExitCode) useExitCode=1 ;;
   useSu) useSu=1 ;;
   debug) debugOut=1 ;;
-  disableTildeExpansion) tildeExpansion=0 ;;
   *) echo -e "auto-root: unknown option: $opt" 1>&2 ;;
   esac
 done
