@@ -13,17 +13,18 @@ You can configure the location of the necessary temp files by modifying `autoRoo
 
 You can add the following options to the source statement in your `~/.bashrc` or `~/.zshrc`  file
 
-- `useExitCode` checks exit code of last command. Slightly better performance, but does not work when cancelling commands (for example a cancel in the middle of `find /` will not rerun with root if this option is enabled) or scripts that do not reliably output an exit code when running into a permissions error
 - `useSu` uses su instead of sudo
 - `debug` prints verbose output and collects the output of all sessions to ~/auto-root.log (Currently does not work with zsh)
-- `disableTildeExpansion` disables tilde expansion. Only meant for testing/debug purposes.
+- `useExitCode` checks exit code of last command. Slightly better performance, but does not work when cancelling commands (for example a cancel in the middle of `find /` will not rerun with root if this option is enabled) or scripts that do not reliably output an exit code when running into a permissions error
 
 Example: `source /opt/auto-root/auto-root.bash useSu debug`
+
+If you want to disable `auto-root` temporarily, start your terminal with `AUTO_ROOT_DISABLE=1` or export it in the current session.
 
 ## dependencies:
 
 - `bash` or `zsh`
-- `su` or `sudo`
+- `sudo` or `su`
 - `script` from `util-linux`
 - multiple tools from `coreutils`
 
