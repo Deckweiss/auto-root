@@ -7,7 +7,7 @@ for opt in "$@"; do
   useSu) useSu=1 ;;
   debug) debugOut=1 ;;
   disableTildeExpansion) tildeExpansion=0 ;;
-  *) echo -e 1>&2 "auto-root: unknown option: $opt" ;;
+  *) echo -e "auto-root: unknown option: $opt" 1>&2 ;;
   esac
 done
 
@@ -44,9 +44,9 @@ declare -a patterns=(
 function getRelevantParentPid() {
   pidTree=$(pstree -spA $$)
 
-  if grep -q zsh <<< "$pidTree"; then
+  if grep -q zsh <<<"$pidTree"; then
     relevantShellName=zsh
-  elif grep -q bash <<< "$pidTree"; then
+  elif grep -q bash <<<"$pidTree"; then
     relevantShellName=bash
   else
     relevantShellName=${SHELL##*/}
@@ -55,13 +55,13 @@ function getRelevantParentPid() {
   relevantParentPid=$(echo "$pidTree" | sed "s/${relevantShellName}(\([0-9]*\)).*$/\1/" | sed 's/^.*---\([0-9]*\)/\1/')
 
   if [[ $debugOut == 1 ]]; then
-      touch "$HOME/auto-root.log"
-      echo "shell name: ${relevantShellName}" >&2
-      echo "pid tree: ${pidTree}" >&2
-      echo "parent pid: ${relevantParentPid}" >&2
-      echo "${relevantParentPid}/$$ : shell name: ${relevantShellName}" >>"$HOME/auto-root.log"
-      echo "${relevantParentPid}/$$ : pid tree: ${pidTree}" >>"$HOME/auto-root.log"
-      echo "${relevantParentPid}/$$ : parent pid: ${relevantParentPid}" >>"$HOME/auto-root.log"
+    touch "$HOME/auto-root.log"
+    echo "shell name: ${relevantShellName}" >&2
+    echo "pid tree: ${pidTree}" >&2
+    echo "parent pid: ${relevantParentPid}" >&2
+    echo "${relevantParentPid}/$$ : shell name: ${relevantShellName}" >>"$HOME/auto-root.log"
+    echo "${relevantParentPid}/$$ : pid tree: ${pidTree}" >>"$HOME/auto-root.log"
+    echo "${relevantParentPid}/$$ : parent pid: ${relevantParentPid}" >>"$HOME/auto-root.log"
   fi
 
   echo "$relevantParentPid"
@@ -79,8 +79,16 @@ function printDebug() {
   fi
 }
 
-
 function startAutoRootSession() {
+    local autoRootDisabled="${AUTO_ROOT_DISABLE:-0}"
+
+    if [[ $autoRootDisabled == 1 ]]; then
+      printDebug "auto-root disabled"
+      return 0
+    else
+      printDebug "auto-root enabled"
+    fi
+
   if [[ -e "$tempfile" ]]; then
     printDebug "tempfile already exists: $tempfile"
   else
@@ -115,38 +123,97 @@ function clearLoggingSession() {
   truncate -s 0 "$tempfile"
 }
 
+#https://stackoverflow.com/a/29310477
+function expandPath() {
+  local path
+  local -a pathElements resultPathElements
+  IFS=':' read -r -a pathElements <<<"$1"
+  : "${pathElements[@]}"
+  for path in "${pathElements[@]}"; do
+    : "$path"
+    case $path in
+    "~+"/*)
+      path=$PWD/${path#"~+/"}
+      ;;
+    "~-"/*)
+      path=$OLDPWD/${path#"~-/"}
+      ;;
+    "~"/*)
+      path=$HOME/${path#"~/"}
+      ;;
+    "~"*)
+      username=${path%%/*}
+      username=${username#"~"}
+      IFS=: read -r _ _ _ _ _ homedir _ < <(getent passwd "$username")
+      if [[ $path == */* ]]; then
+        path=${homedir}/${path#*/}
+      else
+        path=$homedir
+      fi
+      ;;
+    esac
+    resultPathElements+=("$path")
+  done
+  local result
+  printf -v result '%s:' "${resultPathElements[@]}"
+  printf '%s\n' "${result%:}"
+}
+
 function autoRootEvaluate() {
+  local autoRootDisabled="${AUTO_ROOT_DISABLE:-0}"
+
+  if [[ $autoRootDisabled == 1 ]]; then
+    printDebug "auto-root disabled"
+    clearLoggingSession
+    return 0
+  else
+    printDebug "auto-root enabled"
+  fi
+
   if [[ $useExitCode == 1 ]]; then
     if [[ $? ]]; then
-        printDebug "No error exit status returned by last command. Exit code: $?"
-        return 0
+      printDebug "No error exit status returned by last command. Exit code: $?"
+      return 0
     fi
   fi
 
-  shouldRerunAsRoot=false
+  local shouldRerunAsRoot=false
+
+  if [[ ! -e "$tempfile" ]]; then
+      printDebug "tempfile does not exist"
+      return 0
+  fi
+
   for str in "${patterns[@]}"; do
     if grep -iqF "$str" "$tempfile"; then
+      printDebug "it should be re-run as root because '$str' matched"
       shouldRerunAsRoot=true
       break
     fi
   done
 
   clearLoggingSession
+
   if $shouldRerunAsRoot; then
-    if [[ $tildeExpansion == 0 ]]; then
-      previous_command_to_run=$previous_command
-    else
-      printDebug "Previous command raw: '$previous_command'"
-      previous_command_to_run="${previous_command//\~/$HOME}"
-      printDebug "Previous command expanded: '$previous_command_to_run'"
-    fi
+    printDebug "Previous command raw: '$previous_command'"
+    local command_to_run=""
+
+    read -ra splitCommandParts <<<"$previous_command"
+    for a in "${splitCommandParts[@]}"; do
+      printDebug "Expanding path for [$a]"
+      commandPart=$(expandPath "$a")
+      printDebug "$commandPart"
+      command_to_run="$command_to_run$commandPart "
+    done
+
+    printDebug "Previous command expanded: '$command_to_run'"
 
     if [[ $useSu == 1 ]]; then
-      printDebug "re-running '$previous_command_to_run' with su"
-      su -c "$previous_command_to_run"
+      printDebug "re-running '$command_to_run' with su"
+      su -c "$command_to_run"
     else
-      printDebug "re-running '$previous_command_to_run' with sudo"
-      sudo -k bash -c "$previous_command_to_run"
+      printDebug "re-running '$command_to_run' with sudo"
+      sudo -k bash -c "$command_to_run"
     fi
   fi
 }
